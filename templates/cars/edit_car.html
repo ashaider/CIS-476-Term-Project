@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Edit Listing{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card wide-card">
+    <h2>Edit Listing</h2>
+    <p class="form-sub">{{ car.year }} {{ car.make }} {{ car.model }}</p>
+    <form method="POST">
+      <div class="section-divider">Required Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Make <span class="req">*</span></label>
+          <input type="text" name="make" required value="{{ car.make }}" />
+        </div>
+        <div class="form-group">
+          <label>Model <span class="req">*</span></label>
+          <input type="text" name="model" required value="{{ car.model }}" />
+        </div>
+        <div class="form-group">
+          <label>Year <span class="req">*</span></label>
+          <input type="number" name="year" required value="{{ car.year }}" min="1990" max="2026" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Price Per Day ($) <span class="req">*</span></label>
+          <input type="number" name="price_per_day" required value="{{ car.price_per_day }}" min="1" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label>Pick-up Location <span class="req">*</span></label>
+          <input type="text" name="location" required value="{{ car.location }}" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Available From <span class="req">*</span></label>
+          <input type="date" name="available_from" required value="{{ car.available_from }}" />
+        </div>
+        <div class="form-group">
+          <label>Available To <span class="req">*</span></label>
+          <input type="date" name="available_to" required value="{{ car.available_to }}" />
+        </div>
+      </div>
+
+      <div class="section-divider">Optional Details</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Mileage</label>
+          <input type="text" name="mileage" value="{{ car.mileage }}" />
+        </div>
+        <div class="form-group">
+          <label>Transmission</label>
+          <select name="transmission">
+            {% for opt in ['Automatic','Manual','CVT'] %}
+            <option value="{{ opt }}" {{ 'selected' if car.transmission == opt }}>{{ opt }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Seats</label>
+          <input type="number" name="seats" value="{{ car.seats }}" min="1" max="15" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="3">{{ car.description }}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="url" name="image_url" value="{{ car.image_url }}" />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('cars.my_listings') }}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

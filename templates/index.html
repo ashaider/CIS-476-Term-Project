@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}DriveShare{% endblock %}
+{% block content %}
+<div class="hero">
+  <div class="hero-text">
+    <h1>Drive<span class="accent">Share</span></h1>
+    <p class="hero-sub">Rent cars directly from owners around you.<br>No dealerships. No hassle.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">Sign In</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card">
+      <div class="hero-icon">🚗</div>
+      <div>List your car.<br>Earn money.</div>
+    </div>
+    <div class="hero-card hero-card-alt">
+      <div class="hero-icon">🗺</div>
+      <div>Find a car near you.<br>Book instantly.</div>
+    </div>
+  </div>
+</div>
+
+<section class="features">
+  <div class="feature-card">
+    <span class="feat-icon">🔒</span>
+    <h3>Secure Payments</h3>
+    <p>Every transaction is handled securely.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feat-icon">🔔</span>
+    <h3>Price Alerts</h3>
+    <p>Watch a car and get notified the moment the price drops to your budget.</p>
+  </div>
+  <div class="feature-card">
+    <span class="feat-icon">💬</span>
+    <h3>Direct Messaging</h3>
+    <p>Message owners and renters directly from the platform.</p>
+  </div>
+</section>
+{% endblock %}

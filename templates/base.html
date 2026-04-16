@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}DriveShare{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% if current_user.is_authenticated %}
+{% set notif_count = current_user.notifications | selectattr("is_read", "equalto", false) | list | length %}
+{% set msg_count   = current_user.recv_messages  | selectattr("is_read", "equalto", false) | list | length %}
+
+<nav class="navbar">
+  <a class="navbar-brand" href="{{ url_for('cars.search') }}">⬡ DriveShare</a>
+  <div class="nav-links">
+    <a href="{{ url_for('cars.search') }}">Browse</a>
+    <a href="{{ url_for('cars.my_listings') }}">My Cars</a>
+    <a href="{{ url_for('cars.add_car') }}">+ List Car</a>
+    <a href="{{ url_for('booking.my_bookings') }}">My Trips</a>
+    <a href="{{ url_for('booking.owner_bookings') }}">Requests</a>
+    <a href="{{ url_for('messages.inbox') }}" class="icon-link">
+      ✉
+      {% if msg_count > 0 %}<span class="badge">{{ msg_count }}</span>{% endif %}
+    </a>
+    <div class="notif-wrapper">
+      <button class="icon-link notif-btn" onclick="toggleNotifPanel()">
+        🔔
+        {% if notif_count > 0 %}<span class="badge">{{ notif_count }}</span>{% endif %}
+      </button>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-header">
+          Notifications
+          {% if notif_count > 0 %}
+          <form method="POST" action="{{ url_for('watchlist.mark_notifications_read') }}" style="display:inline">
+            <button type="submit" class="link-btn">Mark all read</button>
+          </form>
+          {% endif %}
+        </div>
+        {% set notifications = current_user.notifications | sort(attribute='created_at', reverse=True) %}
+        {% if notifications %}
+          {% for n in notifications[:8] %}
+          <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+            <span class="notif-dot"></span>
+            <span class="notif-text">{{ n.message }}</span>
+            <span class="notif-time">{{ n.created_at.strftime('%b %d') }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="notif-empty">No notifications yet.</div>
+        {% endif %}
+      </div>
+    </div>
+    <a href="{{ url_for('auth.logout') }}" class="btn-logout">Logout</a>
+  </div>
+</nav>
+{% endif %}
+
+<main class="main-content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+function toggleNotifPanel() {
+  const panel = document.getElementById('notifPanel');
+  panel.classList.toggle('active');
+  document.addEventListener('click', function closePanel(e) {
+    if (!e.target.closest('.notif-wrapper')) {
+      panel.classList.remove('active');
+      document.removeEventListener('click', closePanel);
+    }
+  });
+}
+</script>
+</body>
+</html>

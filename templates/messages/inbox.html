@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Inbox{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Inbox</h1>
+</div>
+
+{% if messages %}
+<div class="inbox-list">
+  {% set seen_senders = [] %}
+  {% for msg in messages %}
+    {% if msg.sender_id not in seen_senders %}
+      {% set _ = seen_senders.append(msg.sender_id) %}
+      <a class="inbox-item {% if not msg.is_read %}unread{% endif %}"
+         href="{{ url_for('messages.conversation', other_id=msg.sender_id) }}">
+        <div class="inbox-avatar">{{ msg.sender.name[0] | upper }}</div>
+        <div class="inbox-body">
+          <div class="inbox-name">{{ msg.sender.name }}</div>
+          <div class="inbox-preview">{{ msg.body[:80] }}{% if msg.body|length > 80 %}...{% endif %}</div>
+        </div>
+        <div class="inbox-time">{{ msg.created_at.strftime('%b %d') }}</div>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">✉️</div>
+  <h3>No messages yet</h3>
+  <p>Start a conversation from any car listing page.</p>
+</div>
+{% endif %}
+{% endblock %}

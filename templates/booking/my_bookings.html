@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | My Trips{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>My Trips</h1>
+</div>
+
+{% if bookings %}
+<div class="bookings-list">
+  {% for b in bookings %}
+  <div class="booking-card status-{{ b.status }}">
+    <div class="booking-car">
+      <strong>{{ b.car.year }} {{ b.car.make }} {{ b.car.model }}</strong>
+      <span class="booking-loc">📍 {{ b.car.location }}</span>
+    </div>
+    <div class="booking-dates">
+      {{ b.start_date.strftime('%b %d') }} to {{ b.end_date.strftime('%b %d, %Y') }}
+    </div>
+    <div class="booking-price">${{ "%.2f"|format(b.total_price) }}</div>
+    <div class="booking-status">
+      <span class="status-badge
+        {% if b.status == 'confirmed' %}badge-blue
+        {% elif b.status == 'paid' %}badge-green
+        {% elif b.status == 'cancelled' %}badge-red
+        {% else %}badge-yellow{% endif %}">
+        {{ b.status | capitalize }}
+      </span>
+    </div>
+    <div class="booking-actions">
+      {% if b.status == 'confirmed' %}
+        <a href="{{ url_for('payment.pay', booking_id=b.id) }}" class="btn btn-sm btn-primary">Pay Now</a>
+      {% endif %}
+      {% if b.status in ['pending', 'confirmed'] %}
+        <form method="POST" action="{{ url_for('booking.cancel_booking', booking_id=b.id) }}"
+              onsubmit="return confirm('Cancel this booking?')">
+          <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+        </form>
+      {% endif %}
+      <a href="{{ url_for('messages.conversation', other_id=b.car.owner_id) }}" class="btn btn-sm btn-outline">Message Owner</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">✈️</div>
+  <h3>No trips yet</h3>
+  <p>Browse available cars and book your first trip!</p>
+  <a href="{{ url_for('cars.search') }}" class="btn btn-primary">Browse Cars</a>
+</div>
+{% endif %}
+{% endblock %}

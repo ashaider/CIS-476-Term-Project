@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Pay - DriveShare{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card">
+    <h2>Complete Payment</h2>
+
+    <div class="payment-summary">
+      <div class="pay-row">
+        <span>Car</span>
+        <span>{{ car.year }} {{ car.make }} {{ car.model }}</span>
+      </div>
+      <div class="pay-row">
+        <span>Location</span>
+        <span>{{ car.location }}</span>
+      </div>
+      <div class="pay-row">
+        <span>Dates</span>
+        <span>{{ booking.start_date.strftime('%b %d') }} - {{ booking.end_date.strftime('%b %d, %Y') }}</span>
+      </div>
+      <div class="pay-row">
+        <span>Duration</span>
+        <span>{{ (booking.end_date - booking.start_date).days }} days</span>
+      </div>
+      <div class="pay-row pay-total">
+        <span>Total Due</span>
+        <span>${{ "%.2f"|format(booking.total_price) }}</span>
+      </div>
+    </div>
+
+    <form method="POST">
+      <button type="submit" class="btn btn-primary btn-block btn-lg">
+        💳 Pay ${{ "%.2f"|format(booking.total_price) }}
+      </button>
+    </form>
+    <a href="{{ url_for('booking.my_bookings') }}" class="btn btn-outline btn-block">Back to My Trips</a>
+  </div>
+</div>
+{% endblock %}

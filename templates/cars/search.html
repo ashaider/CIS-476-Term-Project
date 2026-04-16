@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Browse Cars{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Find Your Ride</h1>
+  <p>Browse available cars from owners near you.</p>
+</div>
+
+<form class="search-bar" method="GET" action="{{ url_for('cars.search') }}">
+  <input type="text" name="q" value="{{ query }}" placeholder="Location, make, or model…" />
+  <input type="date" name="from_date" value="{{ from_str }}" placeholder="Pick-up date" />
+  <input type="date" name="to_date"   value="{{ to_str }}"   placeholder="Return date" />
+  <input type="number" name="max_price" value="{{ max_price or '' }}" placeholder="Max $/day" min="1" step="1" />
+  <button type="submit" class="btn btn-primary">Search</button>
+  {% if query or from_str or to_str or max_price %}
+  <a href="{{ url_for('cars.search') }}" class="btn btn-outline">Clear</a>
+  {% endif %}
+</form>
+
+{% if cars %}
+<div class="car-grid">
+  {% for car in cars %}
+  <a class="car-card" href="{{ url_for('cars.car_detail', car_id=car.id) }}">
+    <div class="car-card-img">
+      {% if car.image_url %}
+        <img src="{{ car.image_url }}" alt="{{ car.year }} {{ car.make }} {{ car.model }}" />
+      {% else %}
+        <div class="car-card-placeholder">🚗</div>
+      {% endif %}
+    </div>
+    <div class="car-card-body">
+      <div class="car-card-title">{{ car.year }} {{ car.make }} {{ car.model }}</div>
+      <div class="car-card-meta">
+        <span>📍 {{ car.location }}</span>
+        <span>{{ car.transmission }}</span>
+        <span>{{ car.seats }} seats</span>
+      </div>
+      <div class="car-card-footer">
+        <span class="car-price">${{ "%.2f"|format(car.price_per_day) }}<small>/day</small></span>
+        <span class="car-avail">
+          {{ car.available_from.strftime('%b %d') }} to {{ car.available_to.strftime('%b %d') }}
+        </span>
+      </div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">🔍</div>
+  <h3>No cars found</h3>
+  <p>Try adjusting your search filters, or check back later.</p>
+</div>
+{% endif %}
+{% endblock %}

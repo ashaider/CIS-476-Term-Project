@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | List a Car{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card wide-card">
+    <h2>List Your Car</h2>
+    <p class="form-sub">Fill in the required fields. Optional fields help attract more renters.</p>
+    <form method="POST">
+      <div class="section-divider">Required Information</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Make <span class="req">*</span></label>
+          <input type="text" name="make" required placeholder="e.g. Toyota" />
+        </div>
+        <div class="form-group">
+          <label>Model <span class="req">*</span></label>
+          <input type="text" name="model" required placeholder="e.g. Camry" />
+        </div>
+        <div class="form-group">
+          <label>Year <span class="req">*</span></label>
+          <input type="number" name="year" required placeholder="e.g. 2021" min="1990" max="2026" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Price Per Day ($) <span class="req">*</span></label>
+          <input type="number" name="price_per_day" required placeholder="e.g. 65" min="1" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label>Pick-up Location <span class="req">*</span></label>
+          <input type="text" name="location" required placeholder="e.g. Detroit, MI" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Available From <span class="req">*</span></label>
+          <input type="date" name="available_from" required />
+        </div>
+        <div class="form-group">
+          <label>Available To <span class="req">*</span></label>
+          <input type="date" name="available_to" required />
+        </div>
+      </div>
+
+      <div class="section-divider">Optional Details</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Mileage</label>
+          <input type="text" name="mileage" placeholder="e.g. 32,000 miles" />
+        </div>
+        <div class="form-group">
+          <label>Transmission</label>
+          <select name="transmission">
+            <option value="Automatic">Automatic</option>
+            <option value="Manual">Manual</option>
+            <option value="CVT">CVT</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Seats</label>
+          <input type="number" name="seats" placeholder="5" min="1" max="15" value="5" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="3" placeholder="Tell renters about your car - condition, features, rules..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Image URL <span class="hint">(optional - paste a direct image link)</span></label>
+        <input type="url" name="image_url" placeholder="https://..." />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">List Car</button>
+        <a href="{{ url_for('cars.my_listings') }}" class="btn btn-outline">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

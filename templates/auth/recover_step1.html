@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Recover Password{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card">
+    <h2>Recover Password</h2>
+    <p class="form-sub">Step 1 of 3 - Enter your email address.</p>
+    <form method="POST">
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" name="email" required placeholder="email@example.com" autofocus />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Continue</button>
+    </form>
+    <p class="form-footer"><a href="{{ url_for('auth.login') }}">← Back to login</a></p>
+  </div>
+</div>
+{% endblock %}

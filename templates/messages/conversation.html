@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Chat with {{ other.name }}{% endblock %}
+{% block content %}
+<div class="convo-layout">
+  <div class="convo-header">
+    <a href="{{ url_for('messages.inbox') }}" class="back-link">← Inbox</a>
+    <div class="convo-avatar">{{ other.name[0] | upper }}</div>
+    <h2>{{ other.name }}</h2>
+  </div>
+
+  <div class="convo-thread" id="thread">
+    {% if thread %}
+      {% for msg in thread %}
+      <div class="bubble-wrap {% if msg.sender_id == current_user.id %}mine{% else %}theirs{% endif %}">
+        <div class="bubble">{{ msg.body }}</div>
+        <div class="bubble-time">{{ msg.created_at.strftime('%b %d, %H:%M') }}</div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="convo-empty">No messages yet. Say hello!</div>
+    {% endif %}
+  </div>
+
+  <form class="convo-form" method="POST" action="{{ url_for('messages.send_message', other_id=other.id) }}">
+    <textarea name="body" rows="2" placeholder="Type a message..." required></textarea>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+</div>
+<script>
+  // Auto-scroll to latest message
+  const thread = document.getElementById('thread');
+  thread.scrollTop = thread.scrollHeight;
+</script>
+{% endblock %}

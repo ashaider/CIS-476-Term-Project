@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | {{ car.year }} {{ car.make }} {{ car.model }}{% endblock %}
+{% block content %}
+<div class="detail-layout">
+  <div class="detail-main">
+    <div class="detail-img">
+      {% if car.image_url %}
+        <img src="{{ car.image_url }}" alt="{{ car.year }} {{ car.make }} {{ car.model }}" />
+      {% else %}
+        <div class="detail-img-placeholder">🚗</div>
+      {% endif %}
+    </div>
+    <div class="detail-info">
+      <h1>{{ car.year }} {{ car.make }} {{ car.model }}</h1>
+      <div class="detail-tags">
+        <span class="tag">📍 {{ car.location }}</span>
+        <span class="tag">⚙️ {{ car.transmission }}</span>
+        <span class="tag">👥 {{ car.seats }} seats</span>
+        <span class="tag">🛣 {{ car.mileage }}</span>
+      </div>
+      {% if car.description %}
+      <p class="detail-desc">{{ car.description }}</p>
+      {% endif %}
+      <div class="detail-avail">
+        <strong>Available:</strong>
+        {{ car.available_from.strftime('%B %d, %Y') }} to {{ car.available_to.strftime('%B %d, %Y') }}
+      </div>
+      {% if booked_ranges %}
+      <div class="booked-dates">
+        <strong>Dates already booked:</strong>
+        <ul>
+          {% for s, e in booked_ranges %}
+          <li>{{ s.strftime('%b %d') }} to {{ e.strftime('%b %d, %Y') }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="detail-sidebar">
+    <div class="price-box">
+      <div class="price-big">${{ "%.2f"|format(car.price_per_day) }}<span>/day</span></div>
+      <div class="owner-line">
+        Listed by <strong>{{ car.owner.name }}</strong>
+      </div>
+
+      {% if current_user.id == car.owner_id %}
+        <div class="owner-actions">
+          <a href="{{ url_for('cars.edit_car', car_id=car.id) }}" class="btn btn-outline btn-block">Edit Listing</a>
+        </div>
+      {% elif car.is_available %}
+        <a href="{{ url_for('booking.book_car', car_id=car.id) }}" class="btn btn-primary btn-block">Book This Car</a>
+        <a href="{{ url_for('messages.new_conversation', other_id=car.owner_id) }}" class="btn btn-outline btn-block">Message Owner</a>
+
+        
+        {% set watch = current_user.watchlist | selectattr("car_id", "equalto", car.id) | list %}
+        <div class="watch-section">
+          <div class="watch-title">🔔 Watch for Price Drop</div>
+          {% if watch %}
+            <p class="watch-current">Currently watching at max ${{ "%.2f"|format(watch[0].max_price) }}/day</p>
+            <form method="POST" action="{{ url_for('watchlist.unwatch_car', car_id=car.id) }}">
+              <button type="submit" class="btn btn-ghost btn-block">Remove Watch</button>
+            </form>
+          {% endif %}
+          <form method="POST" action="{{ url_for('watchlist.watch_car', car_id=car.id) }}">
+            <div class="watch-row">
+              <input type="number" name="max_price" placeholder="Your max $/day"
+                     value="{{ watch[0].max_price if watch else '' }}"
+                     min="1" step="0.01" required />
+              <button type="submit" class="btn btn-accent">Watch</button>
+            </div>
+          </form>
+        </div>
+      {% else %}
+        <div class="unavail-badge">Currently Unavailable</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

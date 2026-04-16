@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | My Listings{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>My Car Listings</h1>
+  <a href="{{ url_for('cars.add_car') }}" class="btn btn-primary">+ Add New Car</a>
+</div>
+
+{% if cars %}
+<div class="listings-table-wrap">
+  <table class="listings-table">
+    <thead>
+      <tr>
+        <th>Car</th>
+        <th>Location</th>
+        <th>Price/Day</th>
+        <th>Availability</th>
+        <th>Status</th>
+        <th>Bookings</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for car in cars %}
+      <tr>
+        <td><strong>{{ car.year }} {{ car.make }} {{ car.model }}</strong></td>
+        <td>{{ car.location }}</td>
+        <td>${{ "%.2f"|format(car.price_per_day) }}</td>
+        <td>{{ car.available_from.strftime('%b %d') }} to {{ car.available_to.strftime('%b %d, %Y') }}</td>
+        <td>
+          <span class="status-badge {{ 'badge-green' if car.is_available else 'badge-gray' }}">
+            {{ 'Available' if car.is_available else 'Unlisted' }}
+          </span>
+        </td>
+        <td>{{ car.bookings | selectattr("status", "in", ["confirmed","paid"]) | list | length }} active</td>
+        <td class="action-col">
+          <a href="{{ url_for('cars.edit_car', car_id=car.id) }}" class="btn btn-sm btn-outline">Edit</a>
+          <form method="POST" action="{{ url_for('cars.toggle_availability', car_id=car.id) }}" style="display:inline">
+            <button type="submit" class="btn btn-sm btn-ghost">
+              {{ 'Unlist' if car.is_available else 'Relist' }}
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('cars.delete_car', car_id=car.id) }}" style="display:inline"
+                onsubmit="return confirm('Delete this listing? This cannot be undone.')">
+            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">🚗</div>
+  <h3>No listings yet</h3>
+  <p>List your first car and start earning!</p>
+  <a href="{{ url_for('cars.add_car') }}" class="btn btn-primary">List a Car</a>
+</div>
+{% endif %}
+{% endblock %}

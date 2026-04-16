@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Booking Requests{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Booking Requests</h1>
+  <p>Manage rental requests for your cars.</p>
+</div>
+
+{% if bookings %}
+<div class="bookings-list">
+  {% for b in bookings %}
+  <div class="booking-card status-{{ b.status }}">
+    <div class="booking-car">
+      <strong>{{ b.car.year }} {{ b.car.make }} {{ b.car.model }}</strong>
+      <span class="booking-renter">Requested by <strong>{{ b.renter.name }}</strong></span>
+    </div>
+    <div class="booking-dates">
+      {{ b.start_date.strftime('%b %d') }} to {{ b.end_date.strftime('%b %d, %Y') }}
+    </div>
+    <div class="booking-price">${{ "%.2f"|format(b.total_price) }}</div>
+    <div class="booking-status">
+      <span class="status-badge
+        {% if b.status == 'confirmed' %}badge-blue
+        {% elif b.status == 'paid' %}badge-green
+        {% elif b.status == 'cancelled' %}badge-red
+        {% else %}badge-yellow{% endif %}">
+        {{ b.status | capitalize }}
+      </span>
+    </div>
+    <div class="booking-actions">
+      {% if b.status == 'pending' %}
+        <form method="POST" action="{{ url_for('booking.confirm_booking', booking_id=b.id) }}">
+          <button type="submit" class="btn btn-sm btn-primary">Confirm</button>
+        </form>
+        <form method="POST" action="{{ url_for('booking.cancel_booking', booking_id=b.id) }}"
+              onsubmit="return confirm('Decline this request?')">
+          <button type="submit" class="btn btn-sm btn-danger">Decline</button>
+        </form>
+      {% endif %}
+      <a href="{{ url_for('messages.conversation', other_id=b.renter_id) }}" class="btn btn-sm btn-outline">Message Renter</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📋</div>
+  <h3>No booking requests yet</h3>
+  <p>Requests from renters will appear here once you list a car.</p>
+</div>
+{% endif %}
+{% endblock %}

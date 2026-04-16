@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}DriveShare | Book {{ car.year }} {{ car.make }} {{ car.model }}{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card">
+    <h2>Book This Car</h2>
+    <div class="booking-car-preview">
+      <strong>{{ car.year }} {{ car.make }} {{ car.model }}</strong>
+      <span>📍 {{ car.location }}</span>
+      <span class="price-tag">${{ "%.2f"|format(car.price_per_day) }}/day</span>
+    </div>
+    <p class="form-sub">
+      Available: {{ car.available_from.strftime('%b %d, %Y') }} to {{ car.available_to.strftime('%b %d, %Y') }}
+    </p>
+    <form method="POST" id="bookingForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Pick-up Date</label>
+          <input type="date" name="start_date" id="startDate" required
+                 min="{{ car.available_from }}" max="{{ car.available_to }}" />
+        </div>
+        <div class="form-group">
+          <label>Return Date</label>
+          <input type="date" name="end_date" id="endDate" required
+                 min="{{ car.available_from }}" max="{{ car.available_to }}" />
+        </div>
+      </div>
+      <div class="price-calc" id="priceCalc" style="display:none">
+        <div class="calc-row">
+          <span id="daysLabel">- days</span>
+          <span id="totalLabel">$—</span>
+        </div>
+        <div class="calc-note">Estimated total</div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Request Booking</button>
+      <a href="{{ url_for('cars.car_detail', car_id=car.id) }}" class="btn btn-outline btn-block">Cancel</a>
+    </form>
+  </div>
+</div>
+<script>
+const price = {{ car.price_per_day }};
+const startEl = document.getElementById('startDate');
+const endEl   = document.getElementById('endDate');
+const calc    = document.getElementById('priceCalc');
+const daysLbl = document.getElementById('daysLabel');
+const totLbl  = document.getElementById('totalLabel');
+
+function updateCalc() {
+  if (startEl.value && endEl.value) {
+    const diff = (new Date(endEl.value) - new Date(startEl.value)) / 86400000;
+    if (diff > 0) {
+      daysLbl.textContent = diff + ' day' + (diff > 1 ? 's' : '');
+      totLbl.textContent  = '$' + (diff * price).toFixed(2);
+      calc.style.display  = 'block';
+    }
+  }
+}
+startEl.addEventListener('change', updateCalc);
+endEl.addEventListener('change', updateCalc);
+</script>
+{% endblock %}
